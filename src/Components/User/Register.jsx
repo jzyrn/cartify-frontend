@@ -1,41 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import MetaData from "../Layout/MetaData";
-import { API_BASE_URL, authenticate, getUser } from "../Utils/Helpers";
+import { register, clearErrors } from "../../actions/userActions";
 
 export default function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
   const { name, email, password, confirmPassword } = form;
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated, error, loading } = useSelector((state) => state.auth);
+
   useEffect(() => {
-    if (getUser()) navigate("/", { replace: true });
-  }, []);
+    if (isAuthenticated) {
+      toast.success("Account created!", { position: "bottom-right" });
+      navigate("/", { replace: true });
+    }
+    if (error) {
+      toast.error(error, { position: "bottom-right" });
+      dispatch(clearErrors());
+    }
+  }, [isAuthenticated, error, dispatch, navigate]);
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const submitHandler = async (e) => {
+  const submitHandler = (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
       return toast.error("Passwords do not match", { position: "bottom-right" });
     }
 
-    setLoading(true);
-    try {
-      const { data } = await axios.post(`${API_BASE_URL}/register`, { name, email, password });
-      authenticate(data, () => navigate("/"));
-      toast.success("Account created!", { position: "bottom-right" });
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Registration failed", { position: "bottom-right" });
-    } finally {
-      setLoading(false);
-    }
+    dispatch(register({ name, email, password }));
   };
 
   return (
