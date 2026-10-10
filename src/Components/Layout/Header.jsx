@@ -1,23 +1,21 @@
 import React from "react";
 import { Navbar, Container } from "react-bootstrap";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import Search from "./Search";
 import cartifyLogo from "../../assets/cartify_logo.png";
-import { API_BASE_URL, getUser, logout } from "../Utils/helpers";
+import { logout } from "../../actions/userActions";
 
 export function Header() {
-  useLocation(); // re-renders the header on every page change so login state stays fresh
   const navigate = useNavigate();
-  const user = getUser();
+  const dispatch = useDispatch();
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   const logoutHandler = async () => {
-    try {
-      await axios.get(`${API_BASE_URL}/logout`);
-    } catch (err) {
-      // even if the request fails, still log out on this device
-    }
-    logout(() => navigate("/login"));
+    await dispatch(logout());
+    toast.success("Logged out", { position: "bottom-right" });
+    navigate("/login");
   };
 
   return (
@@ -31,7 +29,7 @@ export function Header() {
 
       <Navbar expand="lg" className="shop-navbar" variant="dark">
         <Container className="d-flex justify-content-between align-items-center flex-wrap">
-          <Navbar.Brand href="/" className="shop-brand">
+          <Navbar.Brand as={Link} to="/" className="shop-brand">
             <img src={cartifyLogo} alt="Cartify" className="shop-logo-img" />
           </Navbar.Brand>
 
@@ -41,16 +39,23 @@ export function Header() {
             <div className="d-flex align-items-center shop-nav-icons">
               <Search />
 
-              {/* not logged in -> /login, logged in -> /me */}
-              <Link to={user ? "/me" : "/login"} className="shop-icon-link mx-3" title={user ? user.name : "Login / Register"}>
+              {/* not logged in -> /login, logged in -> /me with the name beside the icon */}
+              <Link
+                to={isAuthenticated && user ? "/me" : "/login"}
+                className="shop-icon-link mx-3 d-inline-flex align-items-center"
+                title={isAuthenticated && user ? user.name : "Login / Register"}
+              >
                 <i className="fa fa-user-o shop-icon" />
+                {isAuthenticated && user && (
+                  <span className="ms-2 text-white">{user.name}</span>
+                )}
               </Link>
 
-              <a href="/cart" className="shop-icon-link">
+              <Link to="/cart" className="shop-icon-link">
                 <i className="fa fa-shopping-cart shop-icon" />
-              </a>
+              </Link>
 
-              {user && (
+              {isAuthenticated && user && (
                 <button
                   onClick={logoutHandler}
                   className="shop-icon-link ms-3"
