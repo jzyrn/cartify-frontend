@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import MetaData from "./Layout/MetaData";
 
 const categories = [
-  "New Arrivals",
-  "Watches",
-  "Bags",
-  "Footwear",
-  "Outerwear",
-  "Accessories",
-  "Sale",
+  "Foundation",
+  "Concealer",
+  "Powder",
+  "Blush & Highlighter",
+  "Eyeshadow",
+  "Eyeliner & Mascara",
+  "Lipstick & Lip Tint",
+  "Brows",
 ];
 
-// Change this if your backend runs on a different port
 const API_BASE_URL = "http://localhost:4001/api/v1";
 
 export default function Home() {
-  const [activeCategory, setActiveCategory] = useState("New Arrivals");
+  const [activeCategory, setActiveCategory] = useState("All");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,43 +44,22 @@ export default function Home() {
     fetchProducts();
   }, []);
 
+  // filter on the page for now; later this moves to the backend (apiFeatures)
+  const visibleProducts = products.filter(
+    (p) => activeCategory === "All" || p.category === activeCategory
+  );
+
   return (
     <div className="shop-page">
-      <MetaData title="Buy Best Products Online" />
-
-      {/* Hero */}
-      <section className="shop-hero">
-        <Container>
-          <Row className="align-items-center">
-            <Col md={7}>
-              <p className="shop-hero-kicker">Autumn collection</p>
-              <h1 className="shop-hero-title">
-                Built for the long day, kept for the long run.
-              </h1>
-              <p className="shop-hero-copy">
-                Considered essentials in leather, wool, and steel — made to
-                be worn in, not worn out.
-              </p>
-              <Button className="shop-cta">Shop the collection</Button>
-            </Col>
-            <Col md={5} className="d-none d-md-block">
-              <div className="shop-hero-panel">
-                <i className="fa fa-diamond" />
-              </div>
-            </Col>
-          </Row>
-        </Container>
-      </section>
+      <MetaData title="Buy Best Makeup Online" />
 
       {/* Category rail */}
       <section className="shop-category-rail">
         <Container className="d-flex flex-wrap">
-          {categories.map((cat) => (
+          {["All", ...categories].map((cat) => (
             <button
               key={cat}
-              className={
-                "shop-chip" + (cat === activeCategory ? " active" : "")
-              }
+              className={"shop-chip" + (cat === activeCategory ? " active" : "")}
               onClick={() => setActiveCategory(cat)}
             >
               {cat}
@@ -93,7 +72,7 @@ export default function Home() {
       <section className="shop-products">
         <Container>
           <div className="shop-section-heading">
-            <h2>Featured pieces</h2>
+            <h2>Featured products</h2>
             <a href="/products">View all</a>
           </div>
 
@@ -110,10 +89,14 @@ export default function Home() {
             <p>No products found. Have you run the seeder yet?</p>
           )}
 
+          {!loading && !error && products.length > 0 && visibleProducts.length === 0 && (
+            <p>No products in this category.</p>
+          )}
+
           <Row>
             {!loading &&
               !error &&
-              products.map((p) => (
+              visibleProducts.map((p) => (
                 <Col key={p._id} sm={6} lg={4} className="mb-4">
                   <div className="shop-card">
                     <div className="shop-card-image">
@@ -121,11 +104,7 @@ export default function Home() {
                         <img
                           src={p.images[0].url}
                           alt={p.name}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         />
                       ) : (
                         <i className="fa fa-shopping-bag" />
@@ -133,9 +112,10 @@ export default function Home() {
                     </div>
                     <div className="shop-card-body">
                       <p className="shop-card-category">{p.category}</p>
+                      <p className="shop-card-brand">{p.brand}</p>
                       <h3 className="shop-card-name">{p.name}</h3>
                       <div className="shop-card-footer">
-                        <span className="shop-card-price">${p.price}</span>
+                        <span className="shop-card-price">₱{p.price}</span>
                         <button className="shop-card-add">Add to bag</button>
                       </div>
                     </div>
