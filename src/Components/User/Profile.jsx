@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Container, Row, Col } from 'react-bootstrap'
+import { Container } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import Loader from '../Layout/Loader'
 import MetaData from '../Layout/MetaData'
@@ -13,23 +13,54 @@ const Profile = () => {
             {loading || !user ? <Loader /> : (
                 <>
                     <MetaData title="My Profile" />
-                    <Container className="py-5">
-                        <Row className="justify-content-center">
-                            <Col md={8} lg={5}>
-                                <div className="shadow-sm p-4 bg-white rounded">
-                                    <h2 className="mb-4">My Profile</h2>
-                                    <h5>Full Name</h5>
-                                    <p>{user.name}</p>
-                                    <h5>Email</h5>
-                                    <p>{user.email}</p>
-                                    <h5>Joined On</h5>
-                                    <p>{user.createdAt && String(user.createdAt).substring(0, 10)}</p>
-                                    <Link to="/me/update" className="btn shop-cta w-100 mb-2">Edit Profile</Link>
-                                    <Link to="/password/update" className="btn btn-outline-secondary w-100">Change Password</Link>
+
+                    <section className="cartify-profile">
+                        <div className="cartify-profile-banner">
+                            <span className="bubble b1" />
+                            <span className="bubble b2" />
+                            <span className="bubble b3" />
+                            <span className="bubble b4" />
+                        </div>
+
+                        <Container>
+                            <div className="cartify-profile-card">
+                                <div className="cartify-profile-avatar">
+                                    {user.avatar?.url ? (
+                                        <img src={user.avatar.url} alt={user.name} />
+                                    ) : (
+                                        <i className="fa fa-user-o" />
+                                    )}
                                 </div>
-                            </Col>
-                        </Row>
-                    </Container>
+
+                                <h2 className="cartify-profile-name">{user.name}</h2>
+                                <p className="cartify-profile-email">{user.email}</p>
+
+                                <div className="cartify-profile-stats">
+                                    <div>
+                                        <strong>
+                                            {user.createdAt
+                                                ? new Date(user.createdAt).toLocaleDateString('en-PH', {
+                                                    year: 'numeric',
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                })
+                                                : '-'}
+                                        </strong>
+                                        <span>Joined</span>
+                                    </div>
+                                    <div>
+                                        <strong className="text-capitalize">{user.role}</strong>
+                                        <span>Account</span>
+                                    </div>
+                                </div>
+
+                                <div className="cartify-profile-actions">
+                                    <Link to="/me/update" className="cartify-profile-btn primary">Edit Profile</Link>
+                                    <Link to="/password/update" className="cartify-profile-btn outline">Change Password</Link>
+                                </div>
+                            </div>
+                        </Container>
+                    </section>
                 </>
             )}
         </>
