@@ -11,6 +11,7 @@ export function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.cart);
 
   const logoutHandler = async () => {
     await dispatch(logout());
@@ -22,7 +23,7 @@ export function Header() {
     <>
       <div className="shop-utility-bar">
         <Container className="d-flex justify-content-between">
-          <span>Free shipping on orders over $150</span>
+          <span>Free shipping on orders over ₱150</span>
           <span>Help &nbsp;|&nbsp; Track order</span>
         </Container>
       </div>
@@ -51,8 +52,11 @@ export function Header() {
                 )}
               </Link>
 
-              <Link to="/cart" className="shop-icon-link">
+              <Link to="/cart" className="shop-icon-link d-inline-flex align-items-center" title="My cart">
                 <i className="fa fa-shopping-cart shop-icon" />
+                {cartItems.length > 0 && (
+                  <span className="cartify-cart-count">{cartItems.length}</span>
+                )}
               </Link>
 
               {isAuthenticated && user && (
