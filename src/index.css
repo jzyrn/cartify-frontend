@@ -508,3 +508,76 @@
   background: #c9a227;
   color: #111f1a;
 }
+
+/* card buttons */
+.shop-card-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+.shop-card-btn {
+  flex: 1; text-align: center; padding: 0.5rem 0.75rem; border-radius: 999px;
+  font-size: 0.9rem; font-weight: 600; text-decoration: none; cursor: pointer;
+}
+.shop-card-btn.outline { border: 1.5px solid #2c5545; background: transparent; color: #1a3a2f; }
+.shop-card-btn.outline:hover { background: #e9f1ed; }
+.shop-card-btn.solid { border: 1.5px solid #2c5545; background: #2c5545; color: #fff; }
+.shop-card-btn.solid:hover { background: #1a3a2f; }
+.shop-card-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* shared button */
+.cartify-btn { border: 0; border-radius: 999px; padding: 0.7rem 1.75rem; font-weight: 600; cursor: pointer; }
+.cartify-btn.primary { background: linear-gradient(135deg, #2c5545, #3f7a62); color: #fff; box-shadow: 0 6px 16px rgba(44, 85, 69, 0.3); }
+
+/* product details */
+.cartify-details-back { color: #2c5545; text-decoration: none; }
+.cartify-details-image {
+  aspect-ratio: 1 / 1; background: #1a3a2f; border-radius: 16px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; color: #c9a227; font-size: 4rem;
+}
+.cartify-details-image img { width: 100%; height: 100%; object-fit: cover; }
+.cartify-details-meta { margin: 0; text-transform: uppercase; font-size: 0.8rem; color: #6b7d75; letter-spacing: 0.05em; }
+.cartify-details-name { margin: 0.25rem 0; color: #1a3a2f; font-weight: 700; }
+.cartify-details-brand { margin: 0; color: #c9a227; font-weight: 600; }
+.cartify-details-price { font-size: 1.6rem; font-weight: 700; margin: 0.75rem 0; color: #1a3a2f; }
+.cartify-details-desc { line-height: 1.7; color: #3d4f47; }
+.cartify-shades { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+.cartify-shade { padding: 0.35rem 0.9rem; border: 1.5px solid #cfd8d3; border-radius: 999px; background: #fff; cursor: pointer; }
+.cartify-shade.active { border-color: #2c5545; background: #2c5545; color: #fff; }
+.cartify-details-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+/* quantity stepper (details + cart) */
+.cartify-qty { display: inline-flex; align-items: center; border: 1.5px solid #cfd8d3; border-radius: 999px; overflow: hidden; }
+.cartify-qty button { width: 36px; height: 36px; border: 0; background: #fff; font-size: 1.2rem; cursor: pointer; }
+.cartify-qty span { min-width: 38px; text-align: center; font-weight: 600; }
+
+/* cart */
+.cartify-cart-layout { display: grid; grid-template-columns: 1fr 320px; gap: 2rem; align-items: start; }
+@media (max-width: 900px) { .cartify-cart-layout { grid-template-columns: 1fr; } }
+.cartify-cart-item {
+  display: grid; grid-template-columns: 80px 1fr auto auto auto; gap: 1rem; align-items: center;
+  padding: 1rem 0; border-bottom: 1px solid #e3e9e6;
+}
+
+.cartify-cart-count {
+  margin-left: 0.35rem;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #c9a227;
+  color: #111f1a;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+}
+
+.cartify-cart-thumb {
+  width: 80px; height: 80px; border-radius: 12px; background: #1a3a2f; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; color: #c9a227; font-size: 1.5rem;
+}
+.cartify-cart-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.cartify-cart-info a { color: #1a3a2f; font-weight: 600; text-decoration: none; }
+.cartify-cart-sub { margin: 0.1rem 0 0; font-size: 0.85rem; color: #6b7d75; }
+.cartify-cart-price { font-weight: 600; color: #1a3a2f; }
+.cartify-cart-remove { border: 0; background: transparent; color: #b3402f; font-size: 1.1rem; cursor: pointer; }
+.cartify-cart-summary { background: #fff; border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(17, 31, 26, 0.1); }
+.cartify-cart-summary p { display: flex; justify-content: space-between; margin: 0.5rem 0; }
+.cartify-cart-summary p span { font-weight: 700; color: #1a3a2f; }
