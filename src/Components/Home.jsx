@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import MetaData from "./Layout/MetaData";
+import { addItemToCart } from "../actions/cartActions";
 
 const categories = [
   "Foundation",
@@ -16,6 +20,10 @@ const categories = [
 const API_BASE_URL = "http://localhost:4001/api/v1";
 
 export default function Home() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { cartItems } = useSelector((state) => state.cart);
+
   const [activeCategory, setActiveCategory] = useState("All");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,11 +34,9 @@ export default function Home() {
       try {
         setLoading(true);
         const res = await fetch(`${API_BASE_URL}/products`);
-
         if (!res.ok) {
           throw new Error(`Request failed with status ${res.status}`);
         }
-
         const data = await res.json();
         setProducts(data.products || []);
       } catch (err) {
@@ -40,9 +46,21 @@ export default function Home() {
         setLoading(false);
       }
     };
-
     fetchProducts();
   }, []);
+
+  const addToCartHandler = (p) => {
+    // products with shades need a shade chosen on the details page
+    if (p.shades && p.shades.length > 0) {
+      toast.info("Please choose a shade first", { position: "bottom-right" });
+      navigate(`/product/${p._id}`);
+      return;
+    }
+    const inCart = cartItems.find((i) => i.product === p._id && !i.shade);
+    const qty = inCart ? Math.min(inCart.quantity + 1, p.stock) : 1;
+    dispatch(addItemToCart(p._id, qty));
+    toast.success(`${p.name} added to cart`, { position: "bottom-right" });
+  };
 
   // filter on the page for now; later this moves to the backend (apiFeatures)
   const visibleProducts = products.filter(
@@ -53,7 +71,6 @@ export default function Home() {
     <div className="shop-page">
       <MetaData title="Buy Best Makeup Online" />
 
-      {/* Category rail */}
       <section className="shop-category-rail">
         <Container className="d-flex flex-wrap">
           {["All", ...categories].map((cat) => (
@@ -68,12 +85,10 @@ export default function Home() {
         </Container>
       </section>
 
-      {/* Product grid */}
       <section className="shop-products">
         <Container>
           <div className="shop-section-heading">
             <h2>Featured products</h2>
-            <a href="/products">View all</a>
           </div>
 
           {loading && <p>Loading products...</p>}
@@ -116,7 +131,18 @@ export default function Home() {
                       <h3 className="shop-card-name">{p.name}</h3>
                       <div className="shop-card-footer">
                         <span className="shop-card-price">₱{p.price}</span>
-                        <button className="shop-card-add">Add to bag</button>
+                      </div>
+                      <div className="shop-card-actions">
+                        <Link to={`/product/${p._id}`} className="shop-card-btn outline">
+                          View Details
+                        </Link>
+                        <button
+                          className="shop-card-btn solid"
+                          onClick={() => addToCartHandler(p)}
+                          disabled={p.stock === 0}
+                        >
+                          {p.stock === 0 ? "Out of stock" : "Add to Cart"}
+                        </button>
                       </div>
                     </div>
                   </div>
