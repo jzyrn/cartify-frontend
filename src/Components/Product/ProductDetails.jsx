@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -12,6 +12,8 @@ export default function ProductDetails() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { loading, error, product } = useSelector((state) => state.productDetails);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
   const [shade, setShade] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -38,6 +40,12 @@ export default function ProductDetails() {
   const hasShades = product.shades && product.shades.length > 0;
 
   const addToCartHandler = () => {
+    if (!isAuthenticated) {
+      toast.info("Please log in to add items to your cart", { position: "bottom-right" });
+      navigate(`/login?redirect=/product/${product._id}`);
+      return;
+    }
+
     if (hasShades && !shade) {
       return toast.error("Please choose a shade", { position: "bottom-right" });
     }
