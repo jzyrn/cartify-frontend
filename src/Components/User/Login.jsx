@@ -1,24 +1,41 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 
 import Loader from '../Layout/Loader'
 import MetaData from '../Layout/MetaData'
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
+import InputAdornment from '@mui/material/InputAdornment'
 import { useDispatch, useSelector } from 'react-redux'
 import { login, clearErrors } from '../../actions/userActions'
+
+// change the file name if your image is named differently
+import loginImage from '../../assets/cartify_panel.png'
+
+const GREEN = '#1a3329'
+const GOLD = '#c9a227'
+
+// keeps the MUI inputs in the site's green instead of the default blue
+const fieldSx = {
+    mb: 2,
+    '& label.Mui-focused': { color: GREEN },
+    '& .MuiOutlinedInput-root.Mui-focused fieldset': { borderColor: GREEN },
+}
 
 const Login = () => {
     const { isAuthenticated, error, loading } = useSelector(state => state.auth)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
+    const [loginError, setLoginError] = useState('')
     const navigate = useNavigate()
     const location = useLocation()
     const dispatch = useDispatch()
 
     const submitHandler = (e) => {
         e.preventDefault()
+        setLoginError('')
         dispatch(login(email, password))
     }
 
@@ -31,7 +48,8 @@ const Login = () => {
             navigate('/')
         }
         if (error) {
-            toast.error(error, { position: 'bottom-right' })
+            // shown as a MUI Alert inside the form
+            setLoginError(error)
             dispatch(clearErrors())
         }
     }, [error, isAuthenticated, dispatch, navigate, redirect])
@@ -41,47 +59,99 @@ const Login = () => {
             {loading ? <Loader /> : (
                 <>
                     <MetaData title={'Login'} />
-                    <Container className="py-5">
-                        <Row className="justify-content-center">
-                            <Col md={8} lg={5}>
-                                <Form className="shadow-sm p-4 bg-white rounded" onSubmit={submitHandler}>
-                                    <h2 className="mb-4">Login</h2>
 
-                                    <Form.Group className="mb-3" controlId="email_field">
-                                        <Form.Label>Email</Form.Label>
-                                        <Form.Control
-                                            type="email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            required
-                                        />
-                                    </Form.Group>
+                    <section className="auth-page">
+                        <div className="auth-shell">
+                            {/* left: the full image, no text on top */}
+                            <div className="auth-visual">
+                                <img src={loginImage} alt="Cartify" />
+                            </div>
 
-                                    <Form.Group className="mb-3" controlId="password_field">
-                                        <Form.Label>Password</Form.Label>
-                                        <Form.Control
-                                            type="password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            required
-                                        />
-                                    </Form.Group>
+                            {/* right: form */}
+                            <div className="auth-form-side">
+                                <h1 className="auth-title">Your account</h1>
+                                <p className="auth-subtitle">Sign in to see your cart and profile.</p>
 
-                                    <div className="text-end mb-3">
-                                        <Link to="/password/forgot">Forgot Password?</Link>
+                                <div className="auth-tabs">
+                                    <span className="auth-tab active">Sign in</span>
+                                    <Link to="/register" className="auth-tab">Create account</Link>
+                                </div>
+
+                                {/* MUI Alert replaces the error toast */}
+                                {loginError && (
+                                    <Alert
+                                        severity="error"
+                                        onClose={() => setLoginError('')}
+                                        sx={{ mb: 2 }}
+                                    >
+                                        {loginError}
+                                    </Alert>
+                                )}
+
+                                <form onSubmit={submitHandler}>
+                                    <TextField
+                                        id="email_field"
+                                        label="Email"
+                                        type="email"
+                                        placeholder="you@email.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                        fullWidth
+                                        sx={fieldSx}
+                                    />
+
+                                    <TextField
+                                        id="password_field"
+                                        label="Password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        placeholder="Your password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        fullWidth
+                                        sx={fieldSx}
+                                        slotProps={{
+                                            input: {
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <Button
+                                                            size="small"
+                                                            onClick={() => setShowPassword((show) => !show)}
+                                                            sx={{ color: GREEN, minWidth: 0 }}
+                                                        >
+                                                            {showPassword ? 'Hide' : 'Show'}
+                                                        </Button>
+                                                    </InputAdornment>
+                                                ),
+                                            },
+                                        }}
+                                    />
+
+                                    <div className="auth-forgot">
+                                        <Link to="/password/forgot">Forgot password?</Link>
                                     </div>
 
-                                    <Button id="login_button" type="submit" className="shop-cta w-100 py-2">
-                                        LOGIN
+                                    <Button
+                                        id="login_button"
+                                        type="submit"
+                                        variant="contained"
+                                        fullWidth
+                                        sx={{
+                                            bgcolor: GREEN,
+                                            color: GOLD,
+                                            fontWeight: 700,
+                                            letterSpacing: 1,
+                                            py: 1.5,
+                                            '&:hover': { bgcolor: '#12241c' },
+                                        }}
+                                    >
+                                        SIGN IN
                                     </Button>
-
-                                    <p className="mt-3 mb-0 text-center">
-                                        New to Cartify? <Link to="/register">Create an account</Link>
-                                    </p>
-                                </Form>
-                            </Col>
-                        </Row>
-                    </Container>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
                 </>
             )}
         </>

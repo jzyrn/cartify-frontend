@@ -1,14 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import InputAdornment from "@mui/material/InputAdornment";
 import MetaData from "../Layout/MetaData";
 import { register, clearErrors } from "../../actions/userActions";
+
+const GREEN = "#1a3329";
+const GOLD = "#c9a227";
+
+// keeps the MUI inputs in the site's green instead of the default blue
+const fieldSx = {
+  mb: 2,
+  "& label.Mui-focused": { color: GREEN },
+  "& .MuiOutlinedInput-root.Mui-focused fieldset": { borderColor: GREEN },
+};
 
 export default function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const { name, email, password, confirmPassword } = form;
+  const [showPassword, setShowPassword] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,18 +36,23 @@ export default function Register() {
       navigate("/", { replace: true });
     }
     if (error) {
-      toast.error(error, { position: "bottom-right" });
+      // shown as a MUI Alert inside the form
+      setFormError(error);
       dispatch(clearErrors());
     }
   }, [isAuthenticated, error, dispatch, navigate]);
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  const passwordsMismatch = confirmPassword !== "" && password !== confirmPassword;
+
   const submitHandler = (e) => {
     e.preventDefault();
+    setFormError("");
 
     if (password !== confirmPassword) {
-      return toast.error("Passwords do not match", { position: "bottom-right" });
+      setFormError("Passwords do not match");
+      return;
     }
 
     dispatch(register({ name, email, password }));
@@ -43,37 +64,105 @@ export default function Register() {
       <Container className="py-5">
         <Row className="justify-content-center">
           <Col md={8} lg={5}>
-            <Form className="shadow-sm p-4 bg-white rounded" onSubmit={submitHandler}>
+            <form className="shadow-sm p-4 bg-white rounded" onSubmit={submitHandler}>
               <h2 className="mb-4">Register</h2>
 
-              <Form.Group className="mb-3" controlId="name_field">
-                <Form.Label>Name</Form.Label>
-                <Form.Control type="text" name="name" value={name} onChange={onChange} required />
-              </Form.Group>
+              {/* MUI Alert replaces the error toasts */}
+              {formError && (
+                <Alert severity="error" onClose={() => setFormError("")} sx={{ mb: 2 }}>
+                  {formError}
+                </Alert>
+              )}
 
-              <Form.Group className="mb-3" controlId="email_field">
-                <Form.Label>Email</Form.Label>
-                <Form.Control type="email" name="email" value={email} onChange={onChange} required />
-              </Form.Group>
+              <TextField
+                id="name_field"
+                label="Name"
+                type="text"
+                name="name"
+                value={name}
+                onChange={onChange}
+                required
+                fullWidth
+                sx={fieldSx}
+              />
 
-              <Form.Group className="mb-3" controlId="password_field">
-                <Form.Label>Password</Form.Label>
-                <Form.Control type="password" name="password" value={password} onChange={onChange} minLength={6} required />
-              </Form.Group>
+              <TextField
+                id="email_field"
+                label="Email"
+                type="email"
+                name="email"
+                value={email}
+                onChange={onChange}
+                required
+                fullWidth
+                sx={fieldSx}
+              />
 
-              <Form.Group className="mb-4" controlId="confirm_password_field">
-                <Form.Label>Confirm Password</Form.Label>
-                <Form.Control type="password" name="confirmPassword" value={confirmPassword} onChange={onChange} required />
-              </Form.Group>
+              <TextField
+                id="password_field"
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={password}
+                onChange={onChange}
+                required
+                fullWidth
+                helperText="At least 6 characters"
+                sx={fieldSx}
+                slotProps={{
+                  htmlInput: { minLength: 6 },
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Button
+                          size="small"
+                          onClick={() => setShowPassword((show) => !show)}
+                          sx={{ color: GREEN, minWidth: 0 }}
+                        >
+                          {showPassword ? "Hide" : "Show"}
+                        </Button>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
 
-              <Button type="submit" className="shop-cta w-100 py-2" disabled={loading}>
+              <TextField
+                id="confirm_password_field"
+                label="Confirm Password"
+                type={showPassword ? "text" : "password"}
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={onChange}
+                required
+                fullWidth
+                error={passwordsMismatch}
+                helperText={passwordsMismatch ? "Passwords do not match" : " "}
+                sx={{ ...fieldSx, mb: 3 }}
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                disabled={loading}
+                sx={{
+                  bgcolor: GREEN,
+                  color: GOLD,
+                  fontWeight: 700,
+                  letterSpacing: 1,
+                  py: 1.5,
+                  "&:hover": { bgcolor: "#12241c" },
+                  "&.Mui-disabled": { bgcolor: "#6b7d74", color: "#e8e1c4" },
+                }}
+              >
                 {loading ? "Creating account..." : "REGISTER"}
               </Button>
 
               <p className="mt-3 mb-0 text-center">
                 Already have an account? <Link to="/login">Login</Link>
               </p>
-            </Form>
+            </form>
           </Col>
         </Row>
       </Container>
