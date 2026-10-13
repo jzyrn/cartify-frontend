@@ -22,6 +22,7 @@ import {
     FORGOT_PASSWORD_FAIL,
     CLEAR_ERRORS
 } from '../constants/userConstants'
+import { CLEAR_CART } from '../constants/cartConstants'
 
 export const register = (userData) => async (dispatch) => {
     try {
@@ -41,7 +42,7 @@ export const register = (userData) => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: REGISTER_USER_FAIL,
-            payload: error.response.data.message
+            payload: error.response?.data?.message || 'Registration failed'
         })
     }
 }
@@ -57,17 +58,14 @@ export const login = (email, password) => async (dispatch) => {
         }
 
         const { data } = await axios.post(`${import.meta.env.VITE_API}/login`, { email, password }, config)
-        console.log(data.user)
         dispatch({
             type: LOGIN_SUCCESS,
             payload: data.user
         })
     } catch (error) {
-        console.log(error.response.data.message)
-
         dispatch({
             type: LOGIN_FAIL,
-            payload: error.response.data.message
+            payload: error.response?.data?.message || 'Login failed'
         })
     }
 }
@@ -81,13 +79,17 @@ export const logout = () => async (dispatch) => {
             withCredentials: true,
         }
         await axios.get(`${import.meta.env.VITE_API}/logout`, config)
-        dispatch({
-            type: LOGOUT_SUCCESS,
-        })
+
+        dispatch({ type: LOGOUT_SUCCESS })
+
+        // the cart is saved in the browser, so empty it for the next person
+        dispatch({ type: CLEAR_CART })
+        localStorage.removeItem('cartItems')
+        localStorage.removeItem('shippingInfo')
     } catch (error) {
         dispatch({
             type: LOGOUT_FAIL,
-            payload: error.response.data.message
+            payload: error.response?.data?.message || 'Logout failed'
         })
     }
 }
@@ -108,10 +110,9 @@ export const forgotPassword = (email) => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: FORGOT_PASSWORD_FAIL,
-            payload: error.response.data.message
+            payload: error.response?.data?.message || 'Could not send the email'
         })
     }
-
 }
 
 export const updatePassword = (passwords) => async (dispatch) => {
@@ -131,7 +132,7 @@ export const updatePassword = (passwords) => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: UPDATE_PASSWORD_FAIL,
-            payload: error.response.data.message
+            payload: error.response?.data?.message || 'Password update failed'
         })
     }
 }
@@ -151,6 +152,7 @@ export const loadUser = () => async (dispatch) => {
             payload: data.user
         })
     } catch (error) {
+        // being logged out on first load is not an error to show
         dispatch({
             type: LOAD_USER_FAIL,
             payload: null
@@ -160,7 +162,6 @@ export const loadUser = () => async (dispatch) => {
 
 export const updateProfile = (userData) => async (dispatch) => {
     try {
-
         dispatch({ type: UPDATE_PROFILE_REQUEST })
         const config = {
             headers: {
@@ -174,13 +175,11 @@ export const updateProfile = (userData) => async (dispatch) => {
             payload: data.success
         })
     } catch (error) {
-        console.log(error)
         dispatch({
             type: UPDATE_PROFILE_FAIL,
-            payload: error.response.data.message
+            payload: error.response?.data?.message || 'Profile update failed'
         })
     }
-
 }
 
 export const clearErrors = () => async (dispatch) => {

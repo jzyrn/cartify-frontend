@@ -2,6 +2,10 @@ import axios from 'axios'
 import { ADD_TO_CART, REMOVE_ITEM_CART, SAVE_SHIPPING_INFO, CLEAR_CART } from '../constants/cartConstants'
 
 export const addItemToCart = (id, quantity, shade = '') => async (dispatch, getState) => {
+    if (!getState().auth?.isAuthenticated) {
+        return false
+    }
+
     const { data } = await axios.get(`${import.meta.env.VITE_API}/product/${id}`)
     dispatch({
         type: ADD_TO_CART,
@@ -17,6 +21,7 @@ export const addItemToCart = (id, quantity, shade = '') => async (dispatch, getS
         }
     })
     localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems))
+    return true
 }
 
 export const removeItemFromCart = (id, shade = '') => async (dispatch, getState) => {
