@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import Search from "./Search";
 import cartifyLogo from "../../assets/cartify_logo.png";
 import { logout } from "../../actions/userActions";
+import { clearCart } from "../../actions/cartActions";
 
 export function Header() {
   const navigate = useNavigate();
@@ -14,20 +15,16 @@ export function Header() {
   const { cartItems } = useSelector((state) => state.cart);
 
   const logoutHandler = async () => {
-    await dispatch(logout());
-    toast.success("Logged out", { position: "bottom-right" });
-    navigate("/login");
-  };
+  await dispatch(logout());
+  dispatch(clearCart());
+  localStorage.removeItem("cartItems");
+  localStorage.removeItem("shippingInfo");
+  toast.success("Logged out", { position: "bottom-right" });
+  navigate("/login");
+};
 
   return (
     <>
-      <div className="shop-utility-bar">
-        <Container className="d-flex justify-content-between">
-          <span>Free shipping on orders over ₱150</span>
-          <span>Help &nbsp;|&nbsp; Track order</span>
-        </Container>
-      </div>
-
       <Navbar expand="lg" className="shop-navbar" variant="dark">
         <Container className="d-flex justify-content-between align-items-center flex-wrap">
           <Navbar.Brand as={Link} to="/" className="shop-brand">
