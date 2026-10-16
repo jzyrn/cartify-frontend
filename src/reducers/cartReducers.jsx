@@ -27,5 +27,7 @@ export const cartReducer = (state = { cartItems: [], shippingInfo: {} }, action)
             return { ...state, cartItems: [], shippingInfo: {} }
         default:
             return state
-    }
+        case CLEAR_CART:
+       return { ...state, cartItems: [], shippingInfo: {} }
+    }       
 }
