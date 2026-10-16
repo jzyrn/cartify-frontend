@@ -1,3 +1,5 @@
+import { toast } from 'react-toastify'
+
 // Backend address. Put VITE_API=http://localhost:4001/api/v1 in your frontend .env, or leave this default.
 export const API_BASE_URL = import.meta.env.VITE_API || 'http://localhost:4001/api/v1'
 
@@ -31,3 +33,8 @@ export const logout = (next) => {
 export const authConfig = () => ({
     headers: { Authorization: `Bearer ${getToken()}` }
 })
+
+// toast helpers
+export const errMsg = (message = '') => toast.error(message, { position: 'bottom-right' })
+
+export const successMsg = (message = '') => toast.success(message, { position: 'bottom-right' })

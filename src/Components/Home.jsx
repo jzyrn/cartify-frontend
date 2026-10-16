@@ -149,7 +149,7 @@ export default function Home() {
 
   return (
     <div className="shop-page">
-      <MetaData title="Buy Best Makeup Online" />
+      <MetaData title="Cartify - Online Shopping " />
 
       {/* MUI Chips as the category filter */}
       <section className="shop-category-rail">

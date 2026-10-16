@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar, Container } from "react-bootstrap";
+import { Navbar, Container, NavDropdown } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -37,17 +37,40 @@ export function Header() {
             <div className="d-flex align-items-center shop-nav-icons">
               <Search />
 
-              {/* not logged in -> /login, logged in -> /me with the name beside the icon */}
-              <Link
-                to={isAuthenticated && user ? "/me" : "/login"}
-                className="shop-icon-link mx-3 d-inline-flex align-items-center"
-                title={isAuthenticated && user ? user.name : "Login / Register"}
-              >
-                <i className="fa fa-user-o shop-icon" />
-                {isAuthenticated && user && (
-                  <span className="ms-2 text-white">{user.name}</span>
-                )}
-              </Link>
+              {/* not logged in -> /login link; logged in -> dropdown with the name beside the icon */}
+              {isAuthenticated && user ? (
+                <NavDropdown
+                  align="end"
+                  id="user-dropdown"
+                  className="mx-3"
+                  title={
+                    <span className="d-inline-flex align-items-center">
+                      <i className="fa fa-user-o shop-icon" />
+                      <span className="ms-2 text-white">{user.name}</span>
+                    </span>
+                  }
+                >
+                  {user.role === "admin" && (
+                    <NavDropdown.Item as={Link} to="/dashboard">
+                      Dashboard
+                    </NavDropdown.Item>
+                  )}
+                  <NavDropdown.Item as={Link} to="/me">
+                    Profile
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/orders/me">
+                    My Orders
+                  </NavDropdown.Item>
+                </NavDropdown>
+              ) : (
+                <Link
+                  to="/login"
+                  className="shop-icon-link mx-3 d-inline-flex align-items-center"
+                  title="Login / Register"
+                >
+                  <i className="fa fa-user-o shop-icon" />
+                </Link>
+              )}
 
               <Link to="/cart" className="shop-icon-link d-inline-flex align-items-center" title="My cart">
                 <i className="fa fa-shopping-cart shop-icon" />
