@@ -1,8 +1,16 @@
-import React from 'react'
+import { FadeLoader } from 'react-spinners'
 
-const Loader = () => {
+const Loader = ({ size = 70, fullScreen = true }) => {
     return (
-        <div className="loader"> </div>
+        <div className={fullScreen ? 'loader loader-fullscreen' : 'loader loader-inline'}>
+            <FadeLoader
+                color="#2b5344"
+                height={size}
+                width={size / 5}
+                radius={2}
+                margin={2}
+            />
+        </div>
     )
 }
 

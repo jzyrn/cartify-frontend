@@ -8,7 +8,6 @@ import Chip from "@mui/material/Chip";
 import Alert from "@mui/material/Alert";
 import Rating from "@mui/material/Rating";
 import Fab from "@mui/material/Fab";
-import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import MetaData from "./Layout/MetaData";
 import Loader from "./Layout/Loader";
@@ -224,7 +223,7 @@ export default function Home() {
             {/* infinite scroll footer */}
             <div ref={sentinelRef} className="text-center my-4">
               {loading && allProducts.length > 0 && (
-                <CircularProgress size={28} sx={{ color: GREEN }} />
+                <Loader size={28} fullScreen={false} />
               )}
 
               {!loading && !hasMore && allProducts.length > 0 && (

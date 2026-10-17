@@ -3,9 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Form, Button, Image } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import MetaData from "../Layout/MetaData";
+import Loader from "../Layout/Loader";
 import { updateProfile, loadUser, clearErrors } from "../../actions/userActions";
 import { UPDATE_PROFILE_RESET } from "../../constants/userConstants";
+import { profileSchema } from "../../validation/schemas";
 
 const DEFAULT_AVATAR = "https://placehold.co/100x100?text=User";
 
@@ -13,18 +17,19 @@ export default function UpdateProfile() {
   const { user } = useSelector((state) => state.auth);
   const { error, isUpdated, loading } = useSelector((state) => state.user);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [avatar, setAvatar] = useState("");
   const [avatarPreview, setAvatarPreview] = useState(DEFAULT_AVATAR);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { register, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver: yupResolver(profileSchema),
+    defaultValues: { name: "", email: "" },
+  });
 
   useEffect(() => {
     if (user) {
-      setName(user.name);
-      setEmail(user.email);
+      reset({ name: user.name, email: user.email });
       setAvatarPreview(user.avatar?.url || DEFAULT_AVATAR);
     }
   }, [user]);
@@ -42,8 +47,7 @@ export default function UpdateProfile() {
     }
   }, [dispatch, error, isUpdated, navigate]);
 
-  const submitHandler = (e) => {
-    e.preventDefault();
+  const submitHandler = ({ name, email }) => {
     const formData = new FormData();
     formData.set("name", name);
     formData.set("email", email);
@@ -70,17 +74,19 @@ export default function UpdateProfile() {
       <Container className="py-5">
         <Row className="justify-content-center">
           <Col md={8} lg={5}>
-            <Form className="shadow-sm p-4 bg-white rounded" onSubmit={submitHandler} encType="multipart/form-data">
+            <Form className="shadow-sm p-4 bg-white rounded" onSubmit={handleSubmit(submitHandler)} encType="multipart/form-data" noValidate>
               <h2 className="mb-4">Update Profile</h2>
 
               <Form.Group className="mb-3" controlId="name_field">
                 <Form.Label>Name</Form.Label>
-                <Form.Control type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+                <Form.Control type="text" {...register("name")} isInvalid={Boolean(errors.name)} />
+                <Form.Control.Feedback type="invalid">{errors.name?.message}</Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="email_field">
                 <Form.Label>Email</Form.Label>
-                <Form.Control type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Form.Control type="email" {...register("email")} isInvalid={Boolean(errors.email)} />
+                <Form.Control.Feedback type="invalid">{errors.email?.message}</Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group className="mb-4" controlId="avatar_upload">
@@ -92,7 +98,7 @@ export default function UpdateProfile() {
               </Form.Group>
 
               <Button type="submit" className="shop-cta w-100 py-2" disabled={loading}>
-                {loading ? "Saving..." : "UPDATE"}
+                {loading ? <Loader size={22} fullScreen={false} /> : "UPDATE"}
               </Button>
             </Form>
           </Col>

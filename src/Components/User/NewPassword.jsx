@@ -4,6 +4,7 @@ import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 import MetaData from "../Layout/MetaData";
+import Loader from "../Layout/Loader";
 import { API_BASE_URL } from "../Utils/Helpers";
 
 export default function NewPassword() {
@@ -47,7 +48,7 @@ export default function NewPassword() {
               </Form.Group>
 
               <Button type="submit" className="shop-cta w-100 py-2" disabled={loading}>
-                {loading ? "Saving..." : "SET PASSWORD"}
+                {loading ? <Loader size={22} fullScreen={false} /> : "SET PASSWORD"}
               </Button>
             </Form>
           </Col>
@@ -55,4 +56,4 @@ export default function NewPassword() {
       </Container>
     </>
   );
-}
+}s

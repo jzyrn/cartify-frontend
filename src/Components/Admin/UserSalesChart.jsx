@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
-import { Box, CircularProgress, Typography } from '@mui/material'
-import { getToken } from '../Utils/helpers'
+import { Box, Typography } from '@mui/material'
 import axios from 'axios'
+import Loader from '../Layout/Loader'
 
 const GREEN = '#17332a'
 const GREEN_MID = '#2f6b55'
@@ -17,8 +17,7 @@ const UserSalesChart = () => {
 
     const userSales = async () => {
         try {
-            const config = { headers: { Authorization: `Bearer ${getToken()}` } }
-            const { data } = await axios.get(`${import.meta.env.VITE_API}/admin/customer-sales`, config)
+            const { data } = await axios.get(`${import.meta.env.VITE_API}/admin/customer-sales`, { withCredentials: true })
             setSales(data.customerSales)
         } catch (error) {
             setError(error.response?.data?.message || 'Failed to load customer sales')
@@ -35,7 +34,7 @@ const UserSalesChart = () => {
         return (
             <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {loading ? (
-                    <CircularProgress size={28} sx={{ color: GREEN }} />
+                    <Loader size={28} fullScreen={false} />
                 ) : (
                     <Typography color="text.secondary" variant="body2">{error || 'No customer data yet.'}</Typography>
                 )}

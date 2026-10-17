@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Box, CircularProgress, IconButton, Paper, Tooltip, Typography } from '@mui/material'
+import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material'
+import Loader from '../Layout/Loader'
 import Sidebar from './SideBar'
 
 export const GREEN = '#17332a'
@@ -39,7 +40,7 @@ export const PageHeader = ({ title, subtitle, action }) => (
 
 export const PageLoader = () => (
     <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
-        <CircularProgress sx={{ color: GREEN }} />
+        <Loader size={28} fullScreen={false} />
     </Box>
 )
 

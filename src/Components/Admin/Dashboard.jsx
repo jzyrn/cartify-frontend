@@ -8,6 +8,7 @@ import Sidebar from './SideBar'
 import ProductSalesChart from './ProductSalesChart'
 import UserSalesChart from './UserSalesChart'
 import MonthlySalesChart from './MonthlySalesChart'
+import Loader from '../Layout/Loader'
 
 import { getAdminProducts } from '../../actions/productActions'
 import { allOrders } from '../../actions/orderActions'
@@ -102,12 +103,17 @@ const Dashboard = () => {
     const { loading: ordersLoading, orders = [], totalAmount } = useSelector((state) => state.allOrders)
     const { loading: usersLoading, users = [] } = useSelector((state) => state.allUsers)
     const { user } = useSelector((state) => state.auth)
+    const dashboardLoading = productsLoading || ordersLoading || usersLoading
 
     useEffect(() => {
         dispatch(getAdminProducts())
         dispatch(allOrders())
         dispatch(allUsers())
     }, [dispatch])
+
+    if (dashboardLoading) {
+        return <Loader />
+    }
 
     const outOfStockList = products.filter((p) => p.stock === 0)
     const revenue = totalAmount ?? orders.reduce((acc, o) => acc + Number(o.totalPrice || 0), 0)

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useFormik } from 'formik'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Box, Button, Paper, TextField, Typography } from '@mui/material'
 import { toast } from 'react-toastify'
@@ -9,6 +10,7 @@ import MetaData from '../Layout/MetaData'
 import { AdminLayout, PageHeader, primaryBtnSx, fieldSx, cardSx, GREEN, GOLD } from './AdminUI'
 import { updateProduct, getProductDetails, clearErrors } from '../../actions/productActions'
 import { UPDATE_PRODUCT_RESET } from '../../constants/productConstants'
+import { productSchema } from '../../validation/schemas'
 
 const categories = [
     'Electronics',
@@ -32,12 +34,6 @@ const UpdateProduct = () => {
     const { error, product } = useSelector(state => state.productDetails)
     const { loading, error: updateError, isUpdated } = useSelector(state => state.product)
 
-    const [name, setName] = useState('')
-    const [price, setPrice] = useState(0)
-    const [description, setDescription] = useState('')
-    const [category, setCategory] = useState('')
-    const [stock, setStock] = useState(0)
-    const [seller, setSeller] = useState('')
     const [images, setImages] = useState([])
     const [oldImages, setOldImages] = useState([])
     const [imagesPreview, setImagesPreview] = useState([])
@@ -48,20 +44,26 @@ const UpdateProduct = () => {
     const errMsg = (message = '') => toast.error(message, { position: 'bottom-right' })
     const successMsg = (message = '') => toast.success(message, { position: 'bottom-right' })
 
-    const submitHandler = (e) => {
-        e.preventDefault()
+    const formik = useFormik({
+        initialValues: {
+            name: product?.name || '',
+            price: product?.price ?? '',
+            description: product?.description || '',
+            category: product?.category || '',
+            stock: product?.stock ?? '',
+            seller: product?.seller || '',
+        },
+        enableReinitialize: true,
+        validationSchema: productSchema,
+        onSubmit: (values) => {
         const formData = new FormData()
-        formData.set('name', name)
-        formData.set('price', price)
-        formData.set('description', description)
-        formData.set('category', category)
-        formData.set('stock', stock)
-        formData.set('seller', seller)
+        Object.entries(values).forEach(([key, value]) => formData.set(key, value))
         images.forEach(image => {
             formData.append('images', image)
         })
         dispatch(updateProduct(product._id, formData))
-    }
+        },
+    })
 
     const onChange = e => {
         const files = Array.from(e.target.files)
@@ -83,13 +85,7 @@ const UpdateProduct = () => {
     useEffect(() => {
         if (product && product._id !== id) {
             dispatch(getProductDetails(id))
-        } else {
-            setName(product.name)
-            setPrice(product.price)
-            setDescription(product.description)
-            setCategory(product.category)
-            setSeller(product.seller)
-            setStock(product.stock)
+        } else if (product) {
             setOldImages(product.images)
         }
         if (error) {
@@ -116,15 +112,15 @@ const UpdateProduct = () => {
                 <Paper
                     variant="outlined"
                     component="form"
-                    onSubmit={submitHandler}
+                    onSubmit={formik.handleSubmit}
                     encType="multipart/form-data"
                     sx={{ ...cardSx, maxWidth: 760, width: '100%', display: 'flex', flexDirection: 'column', gap: 2.5 }}
                 >
-                    <TextField id="name_field" label="Name" value={name} onChange={(e) => setName(e.target.value)} fullWidth sx={fieldSx} />
+                    <TextField id="name_field" label="Name" {...formik.getFieldProps('name')} error={formik.touched.name && Boolean(formik.errors.name)} helperText={formik.touched.name && formik.errors.name} fullWidth sx={fieldSx} />
 
                     <Box sx={{ display: 'grid', gap: 2.5, gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' } }}>
-                        <TextField id="price_field" label="Price (₱)" value={price} onChange={(e) => setPrice(e.target.value)} sx={fieldSx} />
-                        <TextField id="stock_field" label="Stock" type="number" value={stock} onChange={(e) => setStock(e.target.value)} sx={fieldSx} />
+                        <TextField id="price_field" label="Price (₱)" type="number" {...formik.getFieldProps('price')} error={formik.touched.price && Boolean(formik.errors.price)} helperText={formik.touched.price && formik.errors.price} sx={fieldSx} />
+                        <TextField id="stock_field" label="Stock" type="number" {...formik.getFieldProps('stock')} error={formik.touched.stock && Boolean(formik.errors.stock)} helperText={formik.touched.stock && formik.errors.stock} sx={fieldSx} />
                     </Box>
 
                     <TextField
@@ -132,8 +128,9 @@ const UpdateProduct = () => {
                         label="Description"
                         multiline
                         minRows={5}
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        {...formik.getFieldProps('description')}
+                        error={formik.touched.description && Boolean(formik.errors.description)}
+                        helperText={formik.touched.description && formik.errors.description}
                         fullWidth
                         sx={fieldSx}
                     />
@@ -145,15 +142,16 @@ const UpdateProduct = () => {
                             select
                             SelectProps={{ native: true }}
                             InputLabelProps={{ shrink: true }}
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
+                            {...formik.getFieldProps('category')}
+                            error={formik.touched.category && Boolean(formik.errors.category)}
+                            helperText={formik.touched.category && formik.errors.category}
                             sx={fieldSx}
                         >
                             {categories.map(category => (
                                 <option key={category} value={category}>{category}</option>
                             ))}
                         </TextField>
-                        <TextField id="seller_field" label="Seller Name" value={seller} onChange={(e) => setSeller(e.target.value)} sx={fieldSx} />
+                        <TextField id="seller_field" label="Seller Name" {...formik.getFieldProps('seller')} error={formik.touched.seller && Boolean(formik.errors.seller)} helperText={formik.touched.seller && formik.errors.seller} sx={fieldSx} />
                     </Box>
 
                     <Box>
