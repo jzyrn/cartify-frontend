@@ -8,7 +8,10 @@ import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import InputAdornment from '@mui/material/InputAdornment'
 import { useDispatch, useSelector } from 'react-redux'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { login, clearErrors } from '../../actions/userActions'
+import { loginSchema } from '../../validation/schemas'
 
 // change the file name if your image is named differently
 import loginImage from '../../assets/cartify_panel.png'
@@ -25,16 +28,17 @@ const fieldSx = {
 
 const Login = () => {
     const { isAuthenticated, error, loading } = useSelector(state => state.auth)
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [loginError, setLoginError] = useState('')
     const navigate = useNavigate()
     const location = useLocation()
     const dispatch = useDispatch()
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        resolver: yupResolver(loginSchema),
+        defaultValues: { email: '', password: '' },
+    })
 
-    const submitHandler = (e) => {
-        e.preventDefault()
+    const submitHandler = ({ email, password }) => {
         setLoginError('')
         dispatch(login(email, password))
     }
@@ -88,15 +92,15 @@ const Login = () => {
                                     </Alert>
                                 )}
 
-                                <form onSubmit={submitHandler}>
+                                <form onSubmit={handleSubmit(submitHandler)} noValidate>
                                     <TextField
                                         id="email_field"
                                         label="Email"
                                         type="email"
                                         placeholder="you@email.com"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
+                                        {...register('email')}
+                                        error={Boolean(errors.email)}
+                                        helperText={errors.email?.message}
                                         fullWidth
                                         sx={fieldSx}
                                     />
@@ -106,9 +110,9 @@ const Login = () => {
                                         label="Password"
                                         type={showPassword ? 'text' : 'password'}
                                         placeholder="Your password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
+                                        {...register('password')}
+                                        error={Boolean(errors.password)}
+                                        helperText={errors.password?.message}
                                         fullWidth
                                         sx={fieldSx}
                                         slotProps={{
