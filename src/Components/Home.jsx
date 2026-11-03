@@ -26,8 +26,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Divider from "@mui/material/Divider";
+import Skeleton from "@mui/material/Skeleton";
 import MetaData from "./Layout/MetaData";
-import Loader from "./Layout/Loader";
 import { ActionLoader } from "./Layout/Loader";
 import { getProducts } from "../actions/productActions";
 import { addItemToCart } from "../actions/cartActions";
@@ -47,6 +47,23 @@ const categories = [
 
 const GREEN = "#1a3329";
 const GOLD = "#c9a227";
+
+const ProductCardSkeleton = () => (
+  <div className="shop-card shop-card-skeleton" aria-hidden="true">
+    <Skeleton variant="rectangular" animation="wave" className="shop-card-skeleton-image" />
+    <div className="shop-card-body">
+      <Skeleton animation="wave" width="34%" height={18} />
+      <Skeleton animation="wave" width="46%" height={20} />
+      <Skeleton animation="wave" width="78%" height={28} />
+      <Skeleton animation="wave" width="54%" height={22} sx={{ mt: 1 }} />
+      <Skeleton animation="wave" width="28%" height={24} sx={{ mt: 1 }} />
+      <div className="shop-card-skeleton-actions">
+        <Skeleton animation="wave" variant="rounded" height={40} />
+        <Skeleton animation="wave" variant="rounded" height={40} />
+      </div>
+    </div>
+  </div>
+);
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -79,6 +96,7 @@ export default function Home() {
 
   const hasMore =
     filteredProductsCount !== undefined && allProducts.length < filteredProductsCount;
+  const isInitialLoading = loading && allProducts.length === 0;
   const visibleProducts = minimumRating === 0
     ? allProducts
     : allProducts.filter((product) => {
@@ -321,11 +339,7 @@ export default function Home() {
         </Container>
       </section>
 
-      {/* full-page loader only for the very first load of a list */}
-      {loading && allProducts.length === 0 && filteredProductsCount === undefined ? (
-        <Loader />
-      ) : (
-        <section className="shop-products" id="featured-products">
+      <section className="shop-products" id="featured-products">
           <div className="shop-products-layout">
             <Box
               component="aside"
@@ -422,18 +436,27 @@ export default function Home() {
                   </Alert>
                 )}
 
-                {loading && allProducts.length === 0 && (
-                  <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
-                    <Loader size={28} fullScreen={false} />
-                  </Box>
+                {isInitialLoading ? (
+                  <Row aria-label="Loading products">
+                    {Array.from({ length: 4 }, (_, index) => (
+                      <Col key={`initial-skeleton-${index}`} sm={6} lg={4} className="mb-4">
+                        <ProductCardSkeleton />
+                      </Col>
+                    ))}
+                  </Row>
+                ) : (
+                  <Row>
+                    {visibleProducts.map(renderCard)}
+                    {loading && currentPage > 1 && Array.from({ length: 4 }, (_, index) => (
+                      <Col key={`more-skeleton-${currentPage}-${index}`} sm={6} lg={4} className="mb-4">
+                        <ProductCardSkeleton />
+                      </Col>
+                    ))}
+                  </Row>
                 )}
-
-                <Row>{visibleProducts.map(renderCard)}</Row>
 
                 {/* infinite scroll footer */}
                 <div ref={sentinelRef} className="text-center my-4">
-                  {loading && allProducts.length > 0 && <Loader size={28} fullScreen={false} />}
-
                   {!loading && !hasMore && allProducts.length > 0 && (
                     <>
                       <Alert severity="success" sx={{ display: "inline-flex", mb: 2 }}>
@@ -458,8 +481,7 @@ export default function Home() {
                 </div>
             </div>
           </div>
-        </section>
-      )}
+      </section>
 
       <Dialog
         open={Boolean(quickViewProduct)}

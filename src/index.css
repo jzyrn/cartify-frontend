@@ -425,6 +425,24 @@
   flex-direction: column;
 }
 
+.shop-card-skeleton {
+  overflow: hidden;
+}
+
+.shop-card-skeleton-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  transform: none !important;
+}
+
+.shop-card-skeleton-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
 .shop-card-image {
   background: #f7f5f0;
   aspect-ratio: 1 / 1;
