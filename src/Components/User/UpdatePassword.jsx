@@ -8,7 +8,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import MetaData from '../Layout/MetaData'
 import { ActionLoader } from '../Layout/Loader'
-import { API_BASE_URL, authConfig, authenticate, getUser } from '../Utils/Helpers'
+import { API_BASE_URL, authConfig, getUser, saveUser } from '../Utils/Helpers'
 import loginImage from '../../assets/cartify_panel.png'
 
 const GREEN = '#1a3329'
@@ -34,7 +34,7 @@ export default function UpdatePassword() {
     setLoading(true)
     try {
       const { data } = await axios.put(`${API_BASE_URL}/password/update`, { oldPassword, newPassword }, authConfig())
-      authenticate(data)
+      if (data.user) saveUser(data.user)
       toast.success('Password updated', { position: 'bottom-right' })
       navigate('/me')
     } catch (requestError) {
