@@ -326,7 +326,7 @@ export default function Home() {
         <Loader />
       ) : (
         <section className="shop-products" id="featured-products">
-          <div style={{ position: "relative" }}>
+          <div className="shop-products-layout">
             <Box
               component="aside"
               className="shop-filter-sidebar"
@@ -402,7 +402,7 @@ export default function Home() {
                   )}
             </Box>
 
-            <Container>
+            <div className="shop-products-main">
                 <div className="shop-section-heading">
                   <h2>{keyword ? `Results for "${keyword}"` : "Featured products"}</h2>
                 </div>
@@ -456,7 +456,7 @@ export default function Home() {
                     </>
                   )}
                 </div>
-            </Container>
+            </div>
           </div>
         </section>
       )}
