@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import InputAdornment from '@mui/material/InputAdornment'
 import Alert from '@mui/material/Alert'
 import axios from 'axios'
-import { toast } from 'react-toastify'
 import MetaData from '../Layout/MetaData'
 import { ActionLoader } from '../Layout/Loader'
 import { API_BASE_URL } from '../Utils/Helpers'
@@ -21,13 +20,14 @@ export default function NewPassword() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
   const { token } = useParams()
 
   const submitHandler = async (event) => {
     event.preventDefault()
     setError('')
+    setSuccess('')
     if (password !== confirmPassword) {
       setError('Passwords do not match.')
       return
@@ -35,8 +35,9 @@ export default function NewPassword() {
     setLoading(true)
     try {
       await axios.put(`${API_BASE_URL}/password/reset/${token}`, { password, confirmPassword })
-      toast.success('Password updated. Please sign in.', { position: 'bottom-right' })
-      navigate('/login')
+      setSuccess('Your password was reset successfully. You can now sign in with your new password.')
+      setPassword('')
+      setConfirmPassword('')
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Password reset failed. Please try again.')
     } finally {
@@ -63,6 +64,7 @@ export default function NewPassword() {
                 {loading ? <><ActionLoader size={18} color={GOLD} />Saving…</> : 'UPDATE PASSWORD'}
               </Button>
             </form>
+            {success && <Alert severity="success" sx={{ mt: 2 }}>{success} <Link to="/login">Sign in</Link></Alert>}
             <p className="auth-subtitle" style={{ marginTop: 20 }}><Link to="/login">Back to sign in</Link></p>
           </div>
         </div>
