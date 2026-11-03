@@ -3,6 +3,9 @@ import { Link, useParams } from 'react-router-dom'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import InputAdornment from '@mui/material/InputAdornment'
+import IconButton from '@mui/material/IconButton'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Alert from '@mui/material/Alert'
 import axios from 'axios'
 import MetaData from '../Layout/MetaData'
@@ -45,7 +48,7 @@ export default function NewPassword() {
     }
   }
 
-  const visibilityAdornment = (shown, toggle) => <InputAdornment position="end"><Button size="small" onClick={toggle} variant="outlined" sx={{ color: GREEN, borderColor: '#d9d7d2', minWidth: 58, fontSize: 11, '&:hover': { borderColor: GREEN, bgcolor: '#fafaf8' } }}>{shown ? 'HIDE' : 'SHOW'}</Button></InputAdornment>
+  const visibilityAdornment = (shown, toggle) => <InputAdornment position="end"><IconButton size="small" edge="end" onClick={toggle} aria-label={shown ? 'Hide password' : 'Show password'} title={shown ? 'Hide password' : 'Show password'} sx={{ color: GREEN }}>{shown ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}</IconButton></InputAdornment>
 
   return (
     <>
