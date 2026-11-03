@@ -213,9 +213,10 @@ const Login = () => {
                                                         <Button
                                                             size="small"
                                                             onClick={() => setShowPassword((show) => !show)}
-                                                            sx={{ color: GREEN, minWidth: 0 }}
+                                                            variant="outlined"
+                                                            sx={{ color: GREEN, borderColor: '#d9d7d2', minWidth: 58, fontSize: 11, '&:hover': { borderColor: GREEN, bgcolor: '#fafaf8' } }}
                                                         >
-                                                            {showPassword ? 'Hide' : 'Show'}
+                                                            {showPassword ? 'HIDE' : 'SHOW'}
                                                         </Button>
                                                     </InputAdornment>
                                                 ),

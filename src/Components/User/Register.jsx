@@ -26,6 +26,7 @@ const fieldSx = {
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formError, setFormError] = useState("");
 
   const dispatch = useDispatch();
@@ -109,9 +110,10 @@ export default function Register() {
                         <Button
                           size="small"
                           onClick={() => setShowPassword((show) => !show)}
-                          sx={{ color: GREEN, minWidth: 0 }}
+                          variant="outlined"
+                          sx={{ color: GREEN, borderColor: "#d9d7d2", minWidth: 58, fontSize: 11, '&:hover': { borderColor: GREEN, bgcolor: '#fafaf8' } }}
                         >
-                          {showPassword ? "Hide" : "Show"}
+                          {showPassword ? "HIDE" : "SHOW"}
                         </Button>
                       </InputAdornment>
                     ),
@@ -122,12 +124,28 @@ export default function Register() {
               <TextField
                 id="confirm_password_field"
                 label="Confirm Password"
-                type={showPassword ? "text" : "password"}
+                type={showConfirmPassword ? "text" : "password"}
                 {...register("confirmPassword")}
                 error={Boolean(errors.confirmPassword)}
                 helperText={errors.confirmPassword?.message || " "}
                 fullWidth
                 sx={{ ...fieldSx, mb: 3 }}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Button
+                          size="small"
+                          onClick={() => setShowConfirmPassword((show) => !show)}
+                          variant="outlined"
+                          sx={{ color: GREEN, borderColor: "#d9d7d2", minWidth: 58, fontSize: 11, '&:hover': { borderColor: GREEN, bgcolor: '#fafaf8' } }}
+                        >
+                          {showConfirmPassword ? "HIDE" : "SHOW"}
+                        </Button>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
               />
 
               <Button

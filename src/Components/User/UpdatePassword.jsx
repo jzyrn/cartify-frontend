@@ -40,7 +40,7 @@ export default function UpdatePassword() {
     }
   }
 
-  const visibilityAdornment = (shown, toggle) => <InputAdornment position="end"><Button size="small" onClick={toggle} sx={{ color: GREEN, minWidth: 0 }}>{shown ? 'Hide' : 'Show'}</Button></InputAdornment>
+  const visibilityAdornment = (shown, toggle) => <InputAdornment position="end"><Button size="small" onClick={toggle} variant="outlined" sx={{ color: GREEN, borderColor: '#d9d7d2', minWidth: 58, fontSize: 11, '&:hover': { borderColor: GREEN, bgcolor: '#fafaf8' } }}>{shown ? 'HIDE' : 'SHOW'}</Button></InputAdornment>
 
   return (
     <>
