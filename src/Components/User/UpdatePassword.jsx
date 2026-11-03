@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
@@ -8,7 +8,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import MetaData from '../Layout/MetaData'
 import { ActionLoader } from '../Layout/Loader'
-import { API_BASE_URL, authConfig, getUser, saveUser } from '../Utils/Helpers'
+import { API_BASE_URL, authConfig, saveUser } from '../Utils/Helpers'
 import loginImage from '../../assets/cartify_panel.png'
 
 const GREEN = '#1a3329'
@@ -23,10 +23,6 @@ export default function UpdatePassword() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-
-  useEffect(() => {
-    if (!getUser()) navigate('/login', { replace: true })
-  }, [navigate])
 
   const submitHandler = async (event) => {
     event.preventDefault()
