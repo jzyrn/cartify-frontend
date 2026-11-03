@@ -83,9 +83,7 @@ export default function Home() {
     ? allProducts
     : allProducts.filter((product) => {
         const rating = Number(product.ratings) || 0;
-        return minimumRating === 5
-          ? rating === 5
-          : rating >= minimumRating && rating < minimumRating + 1;
+        return rating > 0 && Math.round(rating) === minimumRating;
       });
 
   useEffect(() => {
