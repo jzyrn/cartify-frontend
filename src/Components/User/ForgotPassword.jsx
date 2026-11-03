@@ -16,7 +16,7 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       const { data } = await axios.post(`${API_BASE_URL}/password/forgot`, { email });
-      toast.success(data.message, { position: "bottom-center" });
+      toast.success(data.message, { position: "bottom-right" });
       setEmail("");
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong", { position: "bottom-right" });

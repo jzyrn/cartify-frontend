@@ -93,7 +93,7 @@ function App() {
           <Route path="/admin/reviews" element={<ProtectedRoute isAdmin={true}><ProductReviews /></ProtectedRoute>} />
         </Routes>
         <Footer />
-        <ToastContainer />
+        <ToastContainer position="bottom-right" />
       </Router>
     </>
   )
