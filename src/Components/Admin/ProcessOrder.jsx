@@ -30,7 +30,7 @@ const ProcessOrder = () => {
     const terminalStatus = currentStatus === 'Delivered' || currentStatus === 'Cancelled'
     const isStatusUnavailable = (nextStatus) => {
         const normalizedStatus = nextStatus === 'Preparing' ? 'Processing' : nextStatus
-        return terminalStatus || STATUS_FLOW.indexOf(normalizedStatus) <= currentStatusIndex
+        return terminalStatus || STATUS_FLOW.indexOf(normalizedStatus) !== currentStatusIndex + 1
     }
 
     const errMsg = (message = '') => toast.error(message, { position: 'bottom-right' })

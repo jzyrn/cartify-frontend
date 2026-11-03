@@ -6,23 +6,34 @@ import { ADD_TO_CART, REMOVE_ITEM_CART, REMOVE_ITEMS_CART, SAVE_SHIPPING_INFO, C
 //  - brand is saved on the cart line
 //  - only logged-in users can add to the cart (returns false otherwise)
 //  - images?.[0]?.url so a product with no image doesn't crash
-export const addItemToCart = (id, quantity, shade = '') => async (dispatch, getState) => {
+export const addItemToCart = (id, quantity, shade = '', clampToAvailableStock = false) => async (dispatch, getState) => {
     if (!getState().auth?.isAuthenticated) {
         return false
     }
 
     const { data } = await axios.get(`${import.meta.env.VITE_API}/product/${id}`)
+    const product = data.product
+    const requestedQuantity = Number(quantity)
+    if (!Number.isInteger(requestedQuantity) || requestedQuantity < 1) {
+        throw new Error('Choose a quantity of at least 1.')
+    }
+    const availableStock = Number(product.stock || 0)
+    if (requestedQuantity > availableStock && !clampToAvailableStock) {
+        throw new Error(`Only ${Number(product.stock || 0)} unit(s) are currently available.`)
+    }
+    const safeQuantity = clampToAvailableStock ? Math.min(requestedQuantity, availableStock) : requestedQuantity
+    if (safeQuantity < 1) throw new Error('This product is currently out of stock.')
     dispatch({
         type: ADD_TO_CART,
         payload: {
-            product: data.product._id,
-            name: data.product.name,
-            brand: data.product.brand,
-            price: data.product.price,
-            image: data.product.images?.[0]?.url || '',
-            stock: data.product.stock,
+            product: product._id,
+            name: product.name,
+            brand: product.brand,
+            price: product.price,
+            image: product.images?.[0]?.url || '',
+            stock: product.stock,
             shade,
-            quantity
+            quantity: safeQuantity
         }
     })
     localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems))

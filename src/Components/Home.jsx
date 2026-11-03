@@ -201,7 +201,7 @@ export default function Home() {
         navigate("/login?redirect=/cart");
       }
     } catch (addError) {
-      toast.error(addError.response?.data?.message || "Could not add this product to your cart.", {
+      toast.error(addError.response?.data?.message || addError.message || "Could not add this product to your cart.", {
         position: "bottom-right",
       });
     } finally {
